@@ -3,7 +3,7 @@ var toString = Object.prototype.toString;
 var isPromiseExist = typeof Promise !== 'undefined';
 var isBufferExist = typeof Buffer !== 'undefined';
 
-var type = {
+var types = {
   NUMBER: 'number',
   UNDEFINED: 'undefined',
   STRING: 'string',
@@ -49,100 +49,100 @@ module.exports = function getType(instance) {
   var type = typeof instance;
 
   switch(type) {
-    case type.NUMBER:
-      return type.NUMBER;
-    case type.UNDEFINED:
-      return type.UNDEFINED;
-    case type.STRING:
-      return type.STRING;
-    case type.BOOLEAN:
-      return type.BOOLEAN;
-    case type.FUNCTION:
-      return type.FUNCTION;
-    case type.SYMBOL:
-      return type.SYMBOL;
-    case type.OBJECT:
-      if(instance === null) return type.NULL;
+    case types.NUMBER:
+      return types.NUMBER;
+    case types.UNDEFINED:
+      return types.UNDEFINED;
+    case types.STRING:
+      return types.STRING;
+    case types.BOOLEAN:
+      return types.BOOLEAN;
+    case types.FUNCTION:
+      return types.FUNCTION;
+    case types.SYMBOL:
+      return types.SYMBOL;
+    case types.OBJECT:
+      if(instance === null) return types.NULL;
 
       var clazz = toString.call(instance);
 
       switch(clazz) {
         case '[object String]':
-          return type.WRAPPER_STRING;
+          return types.WRAPPER_STRING;
         case '[object Boolean]':
-          return type.WRAPPER_BOOLEAN;
+          return types.WRAPPER_BOOLEAN;
         case '[object Number]':
-          return type.WRAPPER_NUMBER;
+          return types.WRAPPER_NUMBER;
         case '[object Array]':
-          return type.ARRAY;
+          return types.ARRAY;
         case '[object RegExp]':
-          return type.REGEXP;
+          return types.REGEXP;
         case '[object Error]':
-          return type.ERROR;
+          return types.ERROR;
         case '[object Date]':
-          return type.DATE;
+          return types.DATE;
         case '[object Arguments]':
-          return type.ARGUMENTS;
+          return types.ARGUMENTS;
         case '[object Math]':
-          return type.OBJECT;
+          return types.OBJECT;
         case '[object JSON]':
-          return type.OBJECT;
+          return types.OBJECT;
         case '[object ArrayBuffer]':
-          return type.ARRAY_BUFFER;
+          return types.ARRAY_BUFFER;
         case '[object Int8Array]':
-          return type.TYPED_ARRAY;
+          return types.TYPED_ARRAY;
         case '[object Uint8Array]':
-          return type.TYPED_ARRAY;
+          return types.TYPED_ARRAY;
         case '[object Uint8ClampedArray]':
-          return type.TYPED_ARRAY;
+          return types.TYPED_ARRAY;
         case '[object Int16Array]':
-          return type.TYPED_ARRAY;
+          return types.TYPED_ARRAY;
         case '[object Uint16Array]':
-          return type.TYPED_ARRAY;
+          return types.TYPED_ARRAY;
         case '[object Int32Array]':
-          return type.TYPED_ARRAY;
+          return types.TYPED_ARRAY;
         case '[object Uint32Array]':
-          return type.TYPED_ARRAY;
+          return types.TYPED_ARRAY;
         case '[object Float32Array]':
-          return type.TYPED_ARRAY;
+          return types.TYPED_ARRAY;
         case '[object Float64Array]':
-          return type.TYPED_ARRAY;
+          return types.TYPED_ARRAY;
         case '[object DataView]':
-          return type.DATA_VIEW;
+          return types.DATA_VIEW;
         case '[object Map]':
-          return type.MAP;
+          return types.MAP;
         case '[object WeakMap]':
-          return type.WEAK_MAP;
+          return types.WEAK_MAP;
         case '[object Set]':
-          return type.SET;
+          return types.SET;
         case '[object WeakSet]':
-          return type.WEAK_SET;
+          return types.WEAK_SET;
         case '[object Promise]':
-          return type.PROMISE;
+          return types.PROMISE;
         case '[object Window]':
-          return type.WINDOW;
+          return types.WINDOW;
         case '[object HTMLDocument]':
-          return type.DOCUMENT;
+          return types.DOCUMENT;
         case '[object Blob]':
-          return type.BLOB;
+          return types.BLOB;
         case '[object File]':
-          return type.FILE;
+          return types.FILE;
         case '[object FileList]':
-          return type.FILE_LIST;
+          return types.FILE_LIST;
         case '[object XMLHttpRequest]':
-          return type.XHR;
+          return types.XHR;
         case '[object Text]':
-          return type.HTML_ELEMENT_TEXT;
+          return types.HTML_ELEMENT_TEXT;
         default:
-          if(isPromiseExist && instance instanceof Promise && getType(instance.then) === FUNCTION && instance.then.length >= 2) return type.PROMISE;
+          if(isPromiseExist && instance instanceof Promise && getType(instance.then) === FUNCTION && instance.then.length >= 2) return types.PROMISE;
 
-          if(isBufferExist && instance instanceof Buffer) return type.BUFFER;
+          if(isBufferExist && instance instanceof Buffer) return types.BUFFER;
 
-          if(/^\[object HTML\w+Element\]$/.test(clazz)) return type.HTML_ELEMENT;
+          if(/^\[object HTML\w+Element\]$/.test(clazz)) return types.HTML_ELEMENT;
 
-          if(clazz === '[object Object]') return type.OBJECT;
+          if(clazz === '[object Object]') return types.OBJECT;
       }
   }
 };
 
-module.exports.type = type;
+module.exports.type = types;
