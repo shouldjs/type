@@ -1,6 +1,6 @@
 {
   "name": "should-type",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Simple module to get instance type",
   "main": "index.js",
   "scripts": {
