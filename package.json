@@ -1,11 +1,8 @@
 {
   "name": "should-type",
-  "version": "0.0.3",
-  "description": "Simple module to get instance type",
+  "version": "0.0.4",
+  "description": "Simple module to get instance type. Like a bit more advanced version of typeof",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/shouldjs/type.git"
