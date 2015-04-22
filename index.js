@@ -1,155 +1,119 @@
 var toString = Object.prototype.toString;
 
-var types = {
-  NUMBER: 'number',
-  UNDEFINED: 'undefined',
-  STRING: 'string',
-  BOOLEAN: 'boolean',
-  OBJECT: 'object',
-  FUNCTION: 'function',
-  NULL: 'null',
-  ARRAY: 'array',
-  REGEXP: 'regexp',
-  DATE: 'date',
-  ERROR: 'error',
-  ARGUMENTS: 'arguments',
-  SYMBOL: 'symbol',
-  ARRAY_BUFFER: 'array-buffer',
-  TYPED_ARRAY: 'typed-array',
-  DATA_VIEW: 'data-view',
-  MAP: 'map',
-  SET: 'set',
-  WEAK_SET: 'weak-set',
-  WEAK_MAP: 'weak-map',
-  PROMISE: 'promise',
+var types = require('./types');
 
-  WRAPPER_NUMBER: 'object-number',
-  WRAPPER_BOOLEAN: 'object-boolean',
-  WRAPPER_STRING: 'object-string',
+function TypeChecker() {
+  this.checks = [];
+}
 
-// node buffer
-  BUFFER: 'buffer',
+TypeChecker.prototype = {
+  add: function(func) {
+    this.checks.push(func);
+    return this;
+  },
 
-// dom html element
-  HTML_ELEMENT: 'html-element',
-  HTML_ELEMENT_TEXT: 'html-element-text',
-  DOCUMENT: 'document',
-  WINDOW: 'window',
-  FILE: 'file',
-  FILE_LIST: 'file-list',
-  BLOB: 'blob',
-
-  XHR: 'xhr'
-};
-
-module.exports = function getType(instance) {
-  var type = typeof instance;
-
-  switch(type) {
-    case types.NUMBER:
-      return types.NUMBER;
-    case types.UNDEFINED:
-      return types.UNDEFINED;
-    case types.STRING:
-      return types.STRING;
-    case types.BOOLEAN:
-      return types.BOOLEAN;
-    case types.FUNCTION:
-      return types.FUNCTION;
-    case types.SYMBOL:
-      return types.SYMBOL;
-    case types.OBJECT:
-      if(instance === null) return types.NULL;
-
-      var clazz = toString.call(instance);
-
-      switch(clazz) {
-        case '[object String]':
-          return types.WRAPPER_STRING;
-        case '[object Boolean]':
-          return types.WRAPPER_BOOLEAN;
-        case '[object Number]':
-          return types.WRAPPER_NUMBER;
-        case '[object Array]':
-          return types.ARRAY;
-        case '[object RegExp]':
-          return types.REGEXP;
-        case '[object Error]':
-          return types.ERROR;
-        case '[object Date]':
-          return types.DATE;
-        case '[object Arguments]':
-          return types.ARGUMENTS;
-        case '[object Math]':
-          return types.OBJECT;
-        case '[object JSON]':
-          return types.OBJECT;
-        case '[object ArrayBuffer]':
-          return types.ARRAY_BUFFER;
-        case '[object Int8Array]':
-          return types.TYPED_ARRAY;
-        case '[object Uint8Array]':
-          return types.TYPED_ARRAY;
-        case '[object Uint8ClampedArray]':
-          return types.TYPED_ARRAY;
-        case '[object Int16Array]':
-          return types.TYPED_ARRAY;
-        case '[object Uint16Array]':
-          return types.TYPED_ARRAY;
-        case '[object Int32Array]':
-          return types.TYPED_ARRAY;
-        case '[object Uint32Array]':
-          return types.TYPED_ARRAY;
-        case '[object Float32Array]':
-          return types.TYPED_ARRAY;
-        case '[object Float64Array]':
-          return types.TYPED_ARRAY;
-        case '[object DataView]':
-          return types.DATA_VIEW;
-        case '[object Map]':
-          return types.MAP;
-        case '[object WeakMap]':
-          return types.WEAK_MAP;
-        case '[object Set]':
-          return types.SET;
-        case '[object WeakSet]':
-          return types.WEAK_SET;
-        case '[object Promise]':
-          return types.PROMISE;
-        case '[object Window]':
-          return types.WINDOW;
-        case '[object HTMLDocument]':
-          return types.DOCUMENT;
-        case '[object Blob]':
-          return types.BLOB;
-        case '[object File]':
-          return types.FILE;
-        case '[object FileList]':
-          return types.FILE_LIST;
-        case '[object XMLHttpRequest]':
-          return types.XHR;
-        case '[object Text]':
-          return types.HTML_ELEMENT_TEXT;
-        default:
-          if((typeof Promise === types.FUNCTION && instance instanceof Promise) || (getType(instance.then) === types.FUNCTION && instance.then.length >= 2)) {
-            return types.PROMISE;
-          }
-
-          if(typeof Buffer !== 'undefined' && instance instanceof Buffer) {
-            return types.BUFFER;
-          }
-
-          if(/^\[object HTML\w+Element\]$/.test(clazz)) {
-            return types.HTML_ELEMENT;
-          }
-
-          if(clazz === '[object Object]') {
-            return types.OBJECT;
-          }
+  addTypeOf: function(type, res) {
+    return this.add(function(obj, tpeOf) {
+      if(tpeOf === type) {
+        return res;
       }
+    });
+  },
+
+  addClass: function(cls, res) {
+    return this.add(function(obj, tpeOf, objCls) {
+      if(objCls === cls) {
+        return res;
+      }
+    });
+  },
+
+  getType: function(obj) {
+    var typeOf = typeof obj;
+    var cls = toString.call(obj);
+
+    for(var i = 0, l = this.checks.length; i < l; i++) {
+      var res = this.checks[i].call(this, obj, typeOf, cls);
+      if(typeof res !== 'undefined') return res;
+    }
+
   }
 };
 
+var global = new TypeChecker();
+
+global
+  .addTypeOf(types.NUMBER, types.NUMBER)
+  .addTypeOf(types.UNDEFINED, types.UNDEFINED)
+  .addTypeOf(types.STRING, types.STRING)
+  .addTypeOf(types.BOOLEAN, types.BOOLEAN)
+  .addTypeOf(types.FUNCTION, types.FUNCTION)
+  .addTypeOf(types.SYMBOL, types.SYMBOL)
+  .add(function(obj, tpeOf) {
+    if(obj === null) return types.NULL;
+  })
+  .addClass('[object String]', types.WRAPPER_STRING)
+  .addClass('[object Boolean]', types.WRAPPER_BOOLEAN)
+  .addClass('[object Number]', types.WRAPPER_NUMBER)
+  .addClass('[object Array]', types.ARRAY)
+  .addClass('[object RegExp]', types.REGEXP)
+  .addClass('[object Error]', types.ERROR)
+  .addClass('[object Date]', types.DATE)
+  .addClass('[object Arguments]', types.ARGUMENTS)
+  .addClass('[object Math]', types.OBJECT)
+  .addClass('[object JSON]', types.OBJECT)
+  .addClass('[object ArrayBuffer]', types.ARRAY_BUFFER)
+  .addClass('[object Int8Array]', types.TYPED_ARRAY)
+  .addClass('[object Uint8Array]', types.TYPED_ARRAY)
+  .addClass('[object Uint8ClampedArray]', types.TYPED_ARRAY)
+  .addClass('[object Int16Array]', types.TYPED_ARRAY)
+  .addClass('[object Uint16Array]', types.TYPED_ARRAY)
+  .addClass('[object Int32Array]', types.TYPED_ARRAY)
+  .addClass('[object Uint32Array]', types.TYPED_ARRAY)
+  .addClass('[object Float32Array]', types.TYPED_ARRAY)
+  .addClass('[object Float64Array]', types.TYPED_ARRAY)//XXX not sure
+  .addClass('[object DataView]', types.DATA_VIEW)
+  .addClass('[object Map]', types.MAP)
+  .addClass('[object WeakMap]', types.WEAK_MAP)
+  .addClass('[object Set]', types.SET)
+  .addClass('[object WeakSet]', types.WEAK_SET)
+  .addClass('[object Promise]', types.PROMISE)
+  .addClass('[object Window]', types.WINDOW)
+  .addClass('[object HTMLDocument]', types.DOCUMENT)
+  .addClass('[object Blob]', types.BLOB)
+  .addClass('[object File]', types.FILE)
+  .addClass('[object FileList]', types.FILE_LIST)
+  .addClass('[object XMLHttpRequest]', types.XHR)
+  .addClass('[object Text]', types.HTML_ELEMENT_TEXT)
+  .add(function(obj) {
+    if((typeof Promise === types.FUNCTION && obj instanceof Promise) ||
+        (this.getType(obj.then) === types.FUNCTION)) {
+          return types.PROMISE;
+        }
+  })
+  .add(function(obj) {
+    if(typeof Buffer !== 'undefined' && obj instanceof Buffer) {
+      return types.BUFFER;
+    }
+  })
+  .add(function(obj, _, cls) {
+    if(/^\[object HTML\w+Element\]$/.test(cls)) {
+      return types.HTML_ELEMENT;
+    }
+  })
+  .add(function() {
+    return types.OBJECT;
+  });
+
+function getGlobalType(obj) {
+  return global.getType(obj);
+}
+
+getGlobalType.checker = global;
+getGlobalType.TypeChecker = TypeChecker;
+
 Object.keys(types).forEach(function(typeName) {
-  module.exports[typeName] = types[typeName];
+  getGlobalType[typeName] = types[typeName];
 });
+
+module.exports = getGlobalType;
