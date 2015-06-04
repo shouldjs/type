@@ -21,10 +21,6 @@ var types = {
   WEAK_MAP: 'weak-map',
   PROMISE: 'promise',
 
-  WRAPPER_NUMBER: 'object-number',
-  WRAPPER_BOOLEAN: 'object-boolean',
-  WRAPPER_STRING: 'object-string',
-
 // node buffer
   BUFFER: 'buffer',
 

@@ -2,6 +2,33 @@ var toString = Object.prototype.toString;
 
 var types = require('./types');
 
+/**
+ * Simple data function to store type information
+ * @param {string} type Usually what is returned from typeof
+ * @param {string} cls  Sanitized @Class via Object.prototype.toString
+ * @param {string} sub  If type and cls the same, and need to specify somehow
+ *
+ * @example
+ *
+ * //for null
+ * new Type('null');
+ *
+ * //for Date
+ * new Type('object', 'date');
+ *
+ * //for Uint8Array
+ *
+ * new Type('object', 'typed-array', 'uint8');
+ */
+function Type(type, cls, sub) {
+  this.type = type;
+  this.cls = cls;
+  this.sub = sub;
+}
+
+/**
+ * Function to store type checks
+ */
 function TypeChecker() {
   this.checks = [];
 }
@@ -15,15 +42,15 @@ TypeChecker.prototype = {
   addTypeOf: function(type, res) {
     return this.add(function(obj, tpeOf) {
       if(tpeOf === type) {
-        return res;
+        return new Type(res);
       }
     });
   },
 
-  addClass: function(cls, res) {
+  addClass: function(cls, res, sub) {
     return this.add(function(obj, tpeOf, objCls) {
       if(objCls === cls) {
-        return res;
+        return new Type(types.OBJECT, res, sub);
       }
     });
   },
@@ -40,9 +67,11 @@ TypeChecker.prototype = {
   }
 };
 
-var global = new TypeChecker();
+var main = new TypeChecker();
 
-global
+//TODO add iterators
+
+main
   .addTypeOf(types.NUMBER, types.NUMBER)
   .addTypeOf(types.UNDEFINED, types.UNDEFINED)
   .addTypeOf(types.STRING, types.STRING)
@@ -50,11 +79,11 @@ global
   .addTypeOf(types.FUNCTION, types.FUNCTION)
   .addTypeOf(types.SYMBOL, types.SYMBOL)
   .add(function(obj, tpeOf) {
-    if(obj === null) return types.NULL;
+    if(obj === null) return new Type(types.NULL);
   })
-  .addClass('[object String]', types.WRAPPER_STRING)
-  .addClass('[object Boolean]', types.WRAPPER_BOOLEAN)
-  .addClass('[object Number]', types.WRAPPER_NUMBER)
+  .addClass('[object String]', types.STRING)
+  .addClass('[object Boolean]', types.BOOLEAN)
+  .addClass('[object Number]', types.NUMBER)
   .addClass('[object Array]', types.ARRAY)
   .addClass('[object RegExp]', types.REGEXP)
   .addClass('[object Error]', types.ERROR)
@@ -63,15 +92,15 @@ global
   .addClass('[object Math]', types.OBJECT)
   .addClass('[object JSON]', types.OBJECT)
   .addClass('[object ArrayBuffer]', types.ARRAY_BUFFER)
-  .addClass('[object Int8Array]', types.TYPED_ARRAY)
-  .addClass('[object Uint8Array]', types.TYPED_ARRAY)
-  .addClass('[object Uint8ClampedArray]', types.TYPED_ARRAY)
-  .addClass('[object Int16Array]', types.TYPED_ARRAY)
-  .addClass('[object Uint16Array]', types.TYPED_ARRAY)
-  .addClass('[object Int32Array]', types.TYPED_ARRAY)
-  .addClass('[object Uint32Array]', types.TYPED_ARRAY)
-  .addClass('[object Float32Array]', types.TYPED_ARRAY)
-  .addClass('[object Float64Array]', types.TYPED_ARRAY)//XXX not sure
+  .addClass('[object Int8Array]', types.TYPED_ARRAY, 'int8')
+  .addClass('[object Uint8Array]', types.TYPED_ARRAY, 'uint8')
+  .addClass('[object Uint8ClampedArray]', types.TYPED_ARRAY, 'uint8clamped')
+  .addClass('[object Int16Array]', types.TYPED_ARRAY, 'int16')
+  .addClass('[object Uint16Array]', types.TYPED_ARRAY, 'uint16')
+  .addClass('[object Int32Array]', types.TYPED_ARRAY, 'int32')
+  .addClass('[object Uint32Array]', types.TYPED_ARRAY, 'uint32')
+  .addClass('[object Float32Array]', types.TYPED_ARRAY, 'float32')
+  .addClass('[object Float64Array]', types.TYPED_ARRAY, 'float64')
   .addClass('[object DataView]', types.DATA_VIEW)
   .addClass('[object Map]', types.MAP)
   .addClass('[object WeakMap]', types.WEAK_MAP)
@@ -79,37 +108,44 @@ global
   .addClass('[object WeakSet]', types.WEAK_SET)
   .addClass('[object Promise]', types.PROMISE)
   .addClass('[object Window]', types.WINDOW)
-  .addClass('[object HTMLDocument]', types.DOCUMENT)
+  .addClass('[object HTMLDocument]', types.HTML_ELEMENT, types.DOCUMENT)
   .addClass('[object Blob]', types.BLOB)
   .addClass('[object File]', types.FILE)
   .addClass('[object FileList]', types.FILE_LIST)
   .addClass('[object XMLHttpRequest]', types.XHR)
-  .addClass('[object Text]', types.HTML_ELEMENT_TEXT)
+  .addClass('[object Text]', types.HTML_ELEMENT, types.TEXT)
   .add(function(obj) {
     if((typeof Promise === types.FUNCTION && obj instanceof Promise) ||
         (this.getType(obj.then) === types.FUNCTION)) {
-          return types.PROMISE;
+          return new Type(types.OBJECT, types.PROMISE);
         }
   })
   .add(function(obj) {
     if(typeof Buffer !== 'undefined' && obj instanceof Buffer) {
-      return types.BUFFER;
+      return new Type(types.OBJECT, types.BUFFER);
     }
   })
   .add(function(obj, _, cls) {
-    if(/^\[object HTML\w+Element\]$/.test(cls)) {
-      return types.HTML_ELEMENT;
+    var m = cls.match(/^\[object HTML(\w*)Element\]$/);
+    if(m) {
+      return new Type(types.OBJECT, types.HTML_ELEMENT, m[1] && m[1].toLowerCase());
     }
   })
   .add(function() {
-    return types.OBJECT;
+    return new Type(types.OBJECT);
   });
 
+/**
+ * Get type information of anything
+ * 
+ * @param  {any} obj Anything that could require type information
+ * @return {Type}    type info
+ */
 function getGlobalType(obj) {
-  return global.getType(obj);
+  return main.getType(obj);
 }
 
-getGlobalType.checker = global;
+getGlobalType.checker = main;
 getGlobalType.TypeChecker = TypeChecker;
 
 Object.keys(types).forEach(function(typeName) {
