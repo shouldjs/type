@@ -1,6 +1,6 @@
 {
   "name": "should-type",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Simple module to get instance type. Like a bit more advanced version of typeof",
   "main": "index.js",
   "repository": {

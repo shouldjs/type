@@ -137,7 +137,7 @@ main
 
 /**
  * Get type information of anything
- * 
+ *
  * @param  {any} obj Anything that could require type information
  * @return {Type}    type info
  */
@@ -147,6 +147,7 @@ function getGlobalType(obj) {
 
 getGlobalType.checker = main;
 getGlobalType.TypeChecker = TypeChecker;
+getGlobalType.Type = Type;
 
 Object.keys(types).forEach(function(typeName) {
   getGlobalType[typeName] = types[typeName];
