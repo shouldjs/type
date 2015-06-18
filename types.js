@@ -33,6 +33,8 @@ var types = {
   FILE_LIST: 'file-list',
   BLOB: 'blob',
 
+  HOST: 'host',
+
   XHR: 'xhr'
 };
 

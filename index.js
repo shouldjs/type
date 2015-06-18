@@ -7,7 +7,7 @@ var types = require('./types');
  * @param {string} type Usually what is returned from typeof
  * @param {string} cls  Sanitized @Class via Object.prototype.toString
  * @param {string} sub  If type and cls the same, and need to specify somehow
- *
+ * @private
  * @example
  *
  * //for null
@@ -28,6 +28,7 @@ function Type(type, cls, sub) {
 
 /**
  * Function to store type checks
+ * @private
  */
 function TypeChecker() {
   this.checks = [];
@@ -89,8 +90,8 @@ main
   .addClass('[object Error]', types.ERROR)
   .addClass('[object Date]', types.DATE)
   .addClass('[object Arguments]', types.ARGUMENTS)
-  .addClass('[object Math]', types.OBJECT)
-  .addClass('[object JSON]', types.OBJECT)
+  .addClass('[object Math]')
+  .addClass('[object JSON]')
   .addClass('[object ArrayBuffer]', types.ARRAY_BUFFER)
   .addClass('[object Int8Array]', types.TYPED_ARRAY, 'int8')
   .addClass('[object Uint8Array]', types.TYPED_ARRAY, 'uint8')
@@ -107,16 +108,13 @@ main
   .addClass('[object Set]', types.SET)
   .addClass('[object WeakSet]', types.WEAK_SET)
   .addClass('[object Promise]', types.PROMISE)
-  .addClass('[object Window]', types.WINDOW)
-  .addClass('[object HTMLDocument]', types.HTML_ELEMENT, types.DOCUMENT)
   .addClass('[object Blob]', types.BLOB)
   .addClass('[object File]', types.FILE)
   .addClass('[object FileList]', types.FILE_LIST)
   .addClass('[object XMLHttpRequest]', types.XHR)
-  .addClass('[object Text]', types.HTML_ELEMENT, types.TEXT)
   .add(function(obj) {
     if((typeof Promise === types.FUNCTION && obj instanceof Promise) ||
-        (this.getType(obj.then) === types.FUNCTION)) {
+        (typeof obj.then === types.FUNCTION)) {
           return new Type(types.OBJECT, types.PROMISE);
         }
   })
@@ -125,10 +123,15 @@ main
       return new Type(types.OBJECT, types.BUFFER);
     }
   })
-  .add(function(obj, _, cls) {
-    var m = cls.match(/^\[object HTML(\w*)Element\]$/);
-    if(m) {
-      return new Type(types.OBJECT, types.HTML_ELEMENT, m[1] && m[1].toLowerCase());
+  .add(function(obj) {
+    if(typeof Node !== 'undefined' && obj instanceof Node) {
+      return new Type(types.OBJECT, types.HTML_ELEMENT, obj.nodeName);
+    }
+  })
+  .add(function(obj) {
+    // probably at the begginging should be enough these checks
+    if(obj.Boolean === Boolean && obj.Number === Number && obj.String === String && obj.Date === Date) {
+      return new Type(types.OBJECT, types.HOST);
     }
   })
   .add(function() {
