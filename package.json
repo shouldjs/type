@@ -1,9 +1,9 @@
 {
   "name": "should-type",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Simple module to get instance type. Like a bit more advanced version of typeof",
   "main": "cjs/should-type.js",
-  "jsnex:main": "es6/should-type.js",
+  "jsnext:main": "es6/should-type.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/shouldjs/type.git"
