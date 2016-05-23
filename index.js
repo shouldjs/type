@@ -1,6 +1,6 @@
-var toString = Object.prototype.toString;
+import types from './types';
 
-var types = require('./types');
+var toString = Object.prototype.toString;
 
 /**
  * Simple data function to store type information
@@ -156,4 +156,4 @@ Object.keys(types).forEach(function(typeName) {
   getGlobalType[typeName] = types[typeName];
 });
 
-module.exports = getGlobalType;
+export default getGlobalType;

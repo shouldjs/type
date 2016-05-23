@@ -38,4 +38,4 @@ var types = {
   XHR: 'xhr'
 };
 
-module.exports = types;
+export default types;
