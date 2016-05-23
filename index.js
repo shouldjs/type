@@ -142,6 +142,7 @@ main
  *
  * @param  {any} obj Anything that could require type information
  * @return {Type}    type info
+ * @private
  */
 function getGlobalType(obj) {
   return main.getType(obj);
