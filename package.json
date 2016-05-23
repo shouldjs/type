@@ -1,6 +1,6 @@
 {
   "name": "should-type",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "Simple module to get instance type. Like a bit more advanced version of typeof",
   "main": "cjs/should-type.js",
   "jsnex:main": "es6/should-type.js",
