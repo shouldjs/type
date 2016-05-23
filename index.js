@@ -90,8 +90,7 @@ main
   .addClass('[object Error]', types.ERROR)
   .addClass('[object Date]', types.DATE)
   .addClass('[object Arguments]', types.ARGUMENTS)
-  .addClass('[object Math]')
-  .addClass('[object JSON]')
+
   .addClass('[object ArrayBuffer]', types.ARRAY_BUFFER)
   .addClass('[object Int8Array]', types.TYPED_ARRAY, 'int8')
   .addClass('[object Uint8Array]', types.TYPED_ARRAY, 'uint8')
