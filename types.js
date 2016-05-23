@@ -35,7 +35,10 @@ var types = {
 
   HOST: 'host',
 
-  XHR: 'xhr'
+  XHR: 'xhr',
+
+  // simd
+  SIMD: 'simd'
 };
 
 export default types;

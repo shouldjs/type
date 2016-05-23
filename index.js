@@ -101,6 +101,18 @@ main
   .addClass('[object Uint32Array]', types.TYPED_ARRAY, 'uint32')
   .addClass('[object Float32Array]', types.TYPED_ARRAY, 'float32')
   .addClass('[object Float64Array]', types.TYPED_ARRAY, 'float64')
+
+  .addClass('[object Bool16x8]', types.SIMD, 'bool16x8')
+  .addClass('[object Bool32x4]', types.SIMD, 'bool32x4')
+  .addClass('[object Bool8x16]', types.SIMD, 'bool8x16')
+  .addClass('[object Float32x4]', types.SIMD, 'float32x4')
+  .addClass('[object Int16x8]', types.SIMD, 'int16x8')
+  .addClass('[object Int32x4]', types.SIMD, 'int32x4')
+  .addClass('[object Int8x16]', types.SIMD, 'int8x16')
+  .addClass('[object Uint16x8]', types.SIMD, 'uint16x8')
+  .addClass('[object Uint32x4]', types.SIMD, 'uint32x4')
+  .addClass('[object Uint8x16]', types.SIMD, 'uint8x16')
+
   .addClass('[object DataView]', types.DATA_VIEW)
   .addClass('[object Map]', types.MAP)
   .addClass('[object WeakMap]', types.WEAK_MAP)
