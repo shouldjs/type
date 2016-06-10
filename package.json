@@ -31,6 +31,6 @@
   },
   "homepage": "https://github.com/shouldjs/type",
   "devDependencies": {
-    "rollup": "^0.26.3"
+    "eslint": "^2.11.1",
   }
 }
