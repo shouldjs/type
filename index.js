@@ -26,6 +26,19 @@ function Type(type, cls, sub) {
   this.sub = sub;
 }
 
+Type.prototype = {
+  toString: function() {
+    var str = [this.type];
+    if (this.cls) {
+      str.push(this.cls);
+    }
+    if (this.sub) {
+      str.push(this.sub);
+    }
+    return str.join(';');
+  }
+};
+
 /**
  * Function to store type checks
  * @private
