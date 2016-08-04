@@ -20,7 +20,7 @@
   ],
   "scripts": {
     "cjs": "rollup --format=cjs --output=cjs/should-type.js index.js",
-    "es6": "rollup --format=es6 --output=es6/should-type.js index.js",
+    "es6": "rollup --format=es --output=es6/should-type.js index.js",
     "build": "npm run cjs && npm run es6",
     "prepublish": "npm run build"
   },
@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/shouldjs/type",
   "devDependencies": {
-    "eslint": "^2.11.1",
-    "rollup": "^0.30.0"
+    "eslint": "^3.0.0",
+    "rollup": "^0.34.3"
   }
 }
