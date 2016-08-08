@@ -30,7 +30,8 @@ function Type(type, cls, sub) {
 }
 
 Type.prototype = {
-  toString: function() {
+  toString: function(sep) {
+    sep = sep || ';';
     var str = [this.type];
     if (this.cls) {
       str.push(this.cls);
@@ -38,7 +39,7 @@ Type.prototype = {
     if (this.sub) {
       str.push(this.sub);
     }
-    return str.join(';');
+    return str.join(sep);
   },
 
   toTryTypes: function() {
