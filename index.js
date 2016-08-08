@@ -21,6 +21,9 @@ var toString = Object.prototype.toString;
  * new Type('object', 'typed-array', 'uint8');
  */
 function Type(type, cls, sub) {
+  if (!type) {
+    throw new Error('Type class must be initialized at least with `type` information');
+  }
   this.type = type;
   this.cls = cls;
   this.sub = sub;
@@ -36,6 +39,19 @@ Type.prototype = {
       str.push(this.sub);
     }
     return str.join(';');
+  },
+
+  toTryTypes: function() {
+    var _types = [];
+    if (this.sub) {
+      _types.push(new Type(this.type, this.cls, this.sub));
+    }
+    if (this.cls) {
+      _types.push(new Type(this.type, this.cls));
+    }
+    _types.push(new Type(this.type));
+
+    return _types;
   }
 };
 
