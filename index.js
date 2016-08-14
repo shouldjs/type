@@ -1,60 +1,9 @@
 import types from './types';
+import { Type } from './type';
 
 var toString = Object.prototype.toString;
 
-/**
- * Simple data function to store type information
- * @param {string} type Usually what is returned from typeof
- * @param {string} cls  Sanitized @Class via Object.prototype.toString
- * @param {string} sub  If type and cls the same, and need to specify somehow
- * @private
- * @example
- *
- * //for null
- * new Type('null');
- *
- * //for Date
- * new Type('object', 'date');
- *
- * //for Uint8Array
- *
- * new Type('object', 'typed-array', 'uint8');
- */
-function Type(type, cls, sub) {
-  if (!type) {
-    throw new Error('Type class must be initialized at least with `type` information');
-  }
-  this.type = type;
-  this.cls = cls;
-  this.sub = sub;
-}
 
-Type.prototype = {
-  toString: function(sep) {
-    sep = sep || ';';
-    var str = [this.type];
-    if (this.cls) {
-      str.push(this.cls);
-    }
-    if (this.sub) {
-      str.push(this.sub);
-    }
-    return str.join(sep);
-  },
-
-  toTryTypes: function() {
-    var _types = [];
-    if (this.sub) {
-      _types.push(new Type(this.type, this.cls, this.sub));
-    }
-    if (this.cls) {
-      _types.push(new Type(this.type, this.cls));
-    }
-    _types.push(new Type(this.type));
-
-    return _types;
-  }
-};
 
 /**
  * Function to store type checks
@@ -68,6 +17,15 @@ TypeChecker.prototype = {
   add: function(func) {
     this.checks.push(func);
     return this;
+  },
+
+  addBeforeFirstMatch: function(obj, func) {
+    var match = this.getFirstMatch(obj);
+    if (match) {
+      this.checks.splice(match.index, 0, func);
+    } else {
+      this.add(func);
+    }
   },
 
   addTypeOf: function(type, res) {
@@ -86,17 +44,21 @@ TypeChecker.prototype = {
     });
   },
 
-  getType: function(obj) {
+  getFirstMatch: function(obj) {
     var typeOf = typeof obj;
     var cls = toString.call(obj);
 
     for (var i = 0, l = this.checks.length; i < l; i++) {
       var res = this.checks[i].call(this, obj, typeOf, cls);
       if (typeof res !== 'undefined') {
-        return res;
+        return { result: res, func: this.checks[i], index: i };
       }
     }
+  },
 
+  getType: function(obj) {
+    var match = this.getFirstMatch(obj);
+    return match && match.result;
   }
 };
 
